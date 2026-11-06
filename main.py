@@ -13,10 +13,12 @@ class Enemy:
         self.type = type
 screen = pygame.display.set_mode((720, 720))
 clock = pygame.time.Clock()
-enemies = [Enemy(10, 10, 1, EnemyType.CIRCLE)]
+enemies = [Enemy(10, 10, 1, EnemyType.CIRCLE), Enemy(500, 300, 1, EnemyType.SQUARE)]
 running = True
 player_img = pygame.image.load("itsanarrow.png").convert_alpha() #bentuknya kayak arrow
 player_pos = Vector2(0, 0) #sebenarnya tidak kasih gerak posisi player tapi semuanya
+angle = 0
+SCREEN_CENTER = Vector2(328, 328) #untuk angle
 while running:
     #ini kode hanya untuk tutup game nya saat udah selesai..,
     for event in pygame.event.get():
@@ -35,6 +37,8 @@ while running:
         player_pos.x += 10
     if keys[pygame.K_d]:
         player_pos.x -= 10
+    direction = pygame.mouse.get_pos() - SCREEN_CENTER
+    _, angle = direction.as_polar()
     #endregion
 
     #region Rendering nya
@@ -42,11 +46,10 @@ while running:
     for enemy in enemies:
         match enemy.type:
             case EnemyType.CIRCLE:
-                pygame.draw.circle(screen, "white", enemy.pos + player_pos, 30.0)
+                pygame.draw.circle(screen, "white", enemy.pos + player_pos, 25.0)
             case EnemyType.SQUARE:
-                pygame.draw.rect(screen, "white", (enemy.pos.x - 15 + player_pos.x, enemy.pos.y - 15 + player_pos.y, 30.0, 30.0))
-
-    new_player_img = pygame.transform.rotate(player_img, 0)
+                pygame.draw.rect(screen, "white", (enemy.pos.x - 25 + player_pos.x, enemy.pos.y - 25 + player_pos.y, 50.0, 50.0))
+    new_player_img = pygame.transform.rotate(player_img, -angle)
     new_rect = new_player_img.get_rect(center=(328, 328)) #328 dari 360 - 32. why get_rect()? karena wobble-wobble dikit entah napa
     screen.blit(new_player_img, new_rect)
     #endregion
